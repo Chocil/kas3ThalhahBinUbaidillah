@@ -218,7 +218,7 @@ tr:hover td {
   <h3>Saldo Akhir: Rp <span id="saldoAkhir">0</span></h3>
 </div>
 
-<h3>💸 Riwayat Pengeluaran</h3>
+<h3>💸 Riwayat Kas</h3>
 <div id="pengeluaranForm" class="form-container" style="display:none;">
   <input type="text" id="ketKeluar" placeholder="Keterangan">
   <input type="number" id="jumlahKeluar" placeholder="Jumlah">
@@ -239,7 +239,7 @@ tr:hover td {
  </div>
 <div id="pagination"></div>
 
-<h3>💰 Riwayat Pemasukan</h3>
+<h3>💰 Riwayat Pemasukan Kas</h3>
 
 <div class="form-container">
   <input type="text" id="filterNama" placeholder="Cari Nama..." oninput="filterMasukByNama()">
@@ -269,7 +269,7 @@ tr:hover td {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycby0X5aCR-1tEUtkSzDi8vVaPR7Zim6L9Dz-7GwgTh9RtHgPU1TFCddY88o7le972Qvw/exec";
+const URL = "https://script.google.com/macros/s/AKfycbwm_G9yevEWdXuwMwStOIDmvofk8xHSA1G_9z4fq87iNf8KVGIAj0Kr5q_YdQ2_k1N-/exec";
 let pengeluaranData = [], pemasukanData = [], currentPage = 1, rowsPerPage = 10, currentPageMasuk = 1, rowsPerPageMasuk = 10;
 
 function updateLoginStatus(){
@@ -320,7 +320,7 @@ function renderTable(){
 
   const start=(currentPage-1)*rowsPerPage; const end=filter?data.length:start+rowsPerPage;
   data.slice(start, end).forEach(d => {
-  const warnaKet = (d.ket || '').toLowerCase().includes('masuk') ? 'background:#d4edda;color:#155724;font-weight:600;' : '';
+  const warnaKet = (d.ket || '').toLowerCase().includes('+') ? 'background:#d4edda;color:#155724;font-weight:600;' : '';//sama ini kode warna hijau uang masuk
   tbody.innerHTML += `
     <tr>
       <td style="${warnaKet}">${d.ket}</td>
@@ -369,7 +369,7 @@ function resetFilterNama(){document.getElementById('filterNama').value="";filter
 function updateTotalPengeluaran(d=pengeluaranData){
   let totalKeluar = 0, totalMasukDariKeluar = 0;
   d.forEach(b=>{
-    if((b.ket || '').toLowerCase().includes("masuk")){
+    if((b.ket || '').toLowerCase().includes("+")){ //kode untuk uang masuk
       totalMasukDariKeluar += b.jumlah;
     } else {
       totalKeluar += b.jumlah;
