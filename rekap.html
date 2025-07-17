@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Emblema+One&display=swap" rel="stylesheet">
   <title>Rekap Kas Kelas</title>
   <style>
 /* RESET */
@@ -22,9 +23,17 @@ body {
 
 /* JUDUL */
 h2 {
+  font-family: 'Emblema One', cursive;
   text-align: center;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  color: #2d89e5;
+  margin-bottom: 20px;
+}
+
+h2 .subjudul {
+  font-family: 'Emblema One', cursive;
+  text-align: center;
+  font-size: 32px;
   color: #2d89e5;
   margin-bottom: 20px;
 }
@@ -176,9 +185,19 @@ tr:hover td {
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  h2 { font-size: 24px; }
+
+    h2 {
+    font-size: 24px;
+  }
+  h2 .subjudul {
+    font-size: 24px;
+}
+
   h3 { font-size: 18px; }
   table { min-width: 100%; }
+
+   
+
 }
 
 </style>
@@ -186,7 +205,7 @@ tr:hover td {
 
 <body>
 
-<h2>📊 Rekapitulasi Kas Kelas</h2>
+<h2>📊 Rekap Kas Kelas 3<br><span class="subjudul">Thalhah Bin Ubaidillah</span></h2>
 
 <div class="tombol-atas">
   <button id="loginBtn" onclick="login()">Login Bendahara</button>
