@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <!-- Tambahkan di bagian <head> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <title>Kas Kelas Kalender</title>
+  <style>
+/* ====== GAYA DASAR ====== */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d89e5;
+  margin-bottom: 30px;
+}
+
+/* ====== KOTAK UTAMA FORM ====== */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ====== BOX FORM ====== */
+/* ====== LOGIN DAN REKAP TANPA BOX ====== */
+#loginBox {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: 100%;
+}
+
+
+h3 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2d89e5;
+  text-align: center;
+}
+
+/* ====== INPUT DAN SELECT ====== */
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: 1.5px solid #cfd8dc;
+  border-radius: 12px;
+  background: #f7f9fc;
+  font-size: 15px;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2d89e5;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(45,137,229,0.3);
+}
+
+/* ====== TOMBOL ====== */
+button {
+  padding: 12px 25px;
+  margin: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #2d89e5, #64b5f6);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(45,137,229,0.3);
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(45,137,229,0.4);
+}
+
+/* ====== FILTER ====== */
+#filterBox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+#filterBox select, #filterBox button {
+  flex: 1 1 200px;
+}
+
+/* ====== KALENDER BOX ====== */
+.kalender-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 30px auto;
+  max-width: 900px;
+}
+
+/* ====== ITEM KALENDER ====== */
+.kalender-item {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+  padding: 20px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.kalender-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.kalender-item h3 {
+  font-size: 20px;
+  color: #2d89e5;
+  margin-bottom: 15px;
+}
+
+.status {
+  padding: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: white;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.sudah {
+  background: linear-gradient(135deg, #4CAF50, #81C784);
+}
+
+.belum {
+  background: linear-gradient(135deg, #e53935, #ef5350);
+}
+
+.kalender-item button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ====== MODAL ====== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 8% auto;
+  padding: 25px;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 15px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  animation: fadeIn 0.3s;
+}
+
+.close {
+  float: right;
+  font-size: 26px;
+  font-weight: bold;
+  color: #e53935;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #b71c1c;
+}
+
+/* ====== PILIHAN DENGAN CHOICES JS ====== */
+.choices__inner {
+  background-color: #fff;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #333;
+  border: 1.5px solid #cfd8dc;
+  min-height: 48px;
+  padding: 12px;
+}
+
+.choices__list--dropdown .choices__item {
+  font-size: 15px;
+}
+
+.choices__item--selectable.is-highlighted {
+  background: #e3f2fd;
+  color: #2d89e5;
+}
+
+/* ====== RESPONSIF ====== */
+@media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+  h2 {
+    font-size: 26px;
+  }
+  .kalender-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ====== ANIMASI MODAL ====== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+  </style>
+</head>
+<body>
+
+<h2>📌 Kas Kelas 3 Thalhah Bin Ubaidillah</h2>
+
+<div id="loginBox">
+  <button id="loginBtn" onclick="login()">Login Bendahara</button>
+  <button onclick="window.location.href='rekap.html'">Rekap Kas</button>
+</div>
+
+<div id="tambahNamaForm" style="display:none;">
+  <h3>Tambah Nama Siswa Baru</h3>
+  <input type="text" id="namaBaru" placeholder="Nama Siswa">
+  <button id="btnTambahNama" onclick="tambahNama()">Tambah Nama</button>
+</div>
+
+<select id="namaFilter"><option value="">Pilih Nama Siswa</option></select>
+<select id="tahunFilter"><option value="">Pilih Tahun</option></select>
+<button onclick="tampilkanKalender()">Cari</button>
+<button onclick="resetFilter()">Reset</button>
+
+<div id="adminForm" style="display:none;">
+  <h3>Tambah Pembayaran</h3>
+  <select id="namaSelect"></select>
+  <select id="bulanSelect">
+    <option value="">Pilih Bulan</option>
+    <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
+    <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
+    <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
+  </select>
+  <input type="number" id="jumlah" placeholder="Jumlah (contoh: 30000)">
+  <button id="btnTambahKas" onclick="tambahKas()">Tambah Data</button>
+</div>
+
+<div id="kalenderBox" class="kalender-box"></div>
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Edit Data Kas</h3>
+    <input type="hidden" id="editKode">
+    <input type="text" id="editNama" readonly>
+    <select id="editBulan">
+      <option value="">Pilih Bulan</option>
+      <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
+      <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
+      <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
+    </select>
+    <input type="number" id="editJumlah" placeholder="Jumlah">
+    <input type="text" id="editKeterangan" placeholder="Keterangan">
+    <button id="btnSimpanEdit" onclick="updateKas()">Simpan Perubahan</button>
+  </div>
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycby0X5aCR-1tEUtkSzDi8vVaPR7Zim6L9Dz-7GwgTh9RtHgPU1TFCddY88o7le972Qvw/exec";
+let allKas = [], daftarNama = [];
+
+function login(){
+  const pass = prompt("Password Bendahara:");
+  if(pass==="admin123"){
+    sessionStorage.setItem('isAdmin','true');
+    alert("Login Berhasil!"); updateLoginStatus();
+  } else alert("Password salah!");
+}
+function logout(){
+  sessionStorage.removeItem('isAdmin');
+  alert("Logout Berhasil!"); updateLoginStatus();
+}
+function updateLoginStatus(){
+  const isAdmin = sessionStorage.getItem('isAdmin');
+  document.getElementById('adminForm').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('tambahNamaForm').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('loginBtn').innerText = isAdmin ? 'Logout Bendahara' : 'Login Bendahara';
+  document.getElementById('loginBtn').onclick = isAdmin ? logout : login;
+  tampilkanKalender();
+}
+
+let namaFilter, namaSelect;
+
+function loadNama(){
+  fetch(`${URL}?action=getSiswa`).then(r=>r.json()).then(data=>{
+    daftarNama = data.map(n => n[0]).sort((a,b)=>a.localeCompare(b));
+
+    // Isi select filter nama
+    const filter = document.getElementById('namaFilter');
+    const select = document.getElementById('namaSelect');
+    filter.innerHTML = '<option value="">Pilih Nama Siswa</option>';
+    select.innerHTML = '<option value="">Pilih Nama</option>';
+    daftarNama.forEach(nama=>{
+      filter.innerHTML += `<option value="${nama}">${nama}</option>`;
+      select.innerHTML += `<option value="${nama}">${nama}</option>`;
+    });
+
+    // Inisialisasi Choices.js agar select bisa ketik + cari
+    if(namaFilter) namaFilter.destroy();
+    if(namaSelect) namaSelect.destroy();
+    namaFilter = new Choices(filter, { searchEnabled: true, shouldSort: false });
+    namaSelect = new Choices(select, { searchEnabled: true, shouldSort: false });
+  });
+
+  const tahunSelect = document.getElementById('tahunFilter');
+  tahunSelect.innerHTML = '<option value="">Pilih Tahun</option>';
+  for(let t=2025; t<=2035; t++){
+    tahunSelect.innerHTML += `<option>${t}</option>`;
+  }
+}
+
+function loadKas(){
+  fetch(`${URL}?action=getKas`).then(r=>r.json()).then(data=>{
+    allKas = data.slice(1);
+    tampilkanKalender();
+  });
+}
+function tampilkanKalender(){
+  const nama = document.getElementById('namaFilter').value;
+  const tahun = document.getElementById('tahunFilter').value;
+  const box = document.getElementById('kalenderBox');
+  box.innerHTML = "";
+  if(!nama || !tahun) return;
+  const isAdmin = sessionStorage.getItem('isAdmin');
+  const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  bulanList.forEach(bulan=>{
+    const pembayaran = allKas.find(d=>{
+      const tgl = d[0]; // kolom tanggal
+      const namaD = d[2];
+      const bulanD = d[3];
+      const tahunD = tgl?.split("-")[0] || "";
+      return namaD===nama && bulanD===bulan && tahunD===tahun;
+    });
+    const isi = pembayaran
+  ? `<div class="status sudah">✅ Sudah Bayar<br>Rp ${parseInt(pembayaran[4]).toLocaleString()}<br>${pembayaran[5] || ''}</div>
+     ${isAdmin ? `
+     <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}')">Edit</button>
+     <button onclick="hapusKas('${pembayaran[1]}')">Hapus</button>` : ''}`
+  : `<div class="status belum">❌ Belum Bayar</div>`;
+
+
+    box.innerHTML += `<div class="kalender-item"><h3>${bulan}</h3>${isi}</div>`;
+  });
+}
+function resetFilter(){
+  document.getElementById('namaFilter').value = '';
+  document.getElementById('tahunFilter').value = '';
+  namaFilter.setChoiceByValue('');
+  document.getElementById('kalenderBox').innerHTML = '';
+}
+
+function tambahKas(){
+  const btn = document.getElementById('btnTambahKas');
+  btn.disabled = true;
+  btn.innerText = 'Loading...';
+  const nama = document.getElementById('namaSelect').value,
+        bulan = document.getElementById('bulanSelect').value,
+        jumlah = document.getElementById('jumlah').value,
+        keterangan = 'Uang Kas';
+  if(!nama || !bulan || !jumlah){
+    alert("Lengkapi semua data!"); btn.disabled = false; btn.innerText = 'Tambah Data'; return;
+  }
+  const sudahAda = allKas.some(d => d[2] === nama && d[3] === bulan);
+  if(sudahAda){ alert("❗ Sudah bayar!"); btn.disabled = false; btn.innerText = 'Tambah Data'; return; }
+  fetch(`${URL}?action=addKas&password=admin123`,{
+    method:'POST',
+    body: new URLSearchParams({nama,bulan,jumlah,keterangan})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status==='success'){ 
+      alert("Data ditambahkan!"); 
+      document.getElementById('bulanSelect').value='';
+      document.getElementById('jumlah').value='';
+      namaSelect.setChoiceByValue('');
+      loadKas(); 
+    } else alert("Gagal tambah data");
+  }).finally(()=>{ btn.disabled = false; btn.innerText = 'Tambah Data'; });
+}
+
+function openEdit(kode,nama,bulan,jumlah,keterangan){
+  document.getElementById('editKode').value=kode;
+  document.getElementById('editNama').value=nama;
+  document.getElementById('editJumlah').value=jumlah;
+  document.getElementById('editKeterangan').value=keterangan;
+  
+  const bulanSelect = document.getElementById('editBulan');
+  bulanSelect.innerHTML = '<option value="">Pilih Bulan</option>';
+  const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+  bulanList.forEach(bul => {
+    // Cek apakah bulan sudah ada
+    const sudahAda = allKas.some(d => 
+      d[2] === nama && d[3] === bul && d[1] !== kode
+    );
+    const disable = sudahAda ? 'disabled' : '';
+    bulanSelect.innerHTML += `<option value="${bul}" ${disable}>${bul} ${sudahAda ? '(Sudah Bayar)' : ''}</option>`;
+  });
+
+  bulanSelect.value = bulan;
+  document.getElementById('editModal').style.display='block';
+}
+
+function closeModal(){
+  document.getElementById('editModal').style.display='none';
+}
+function updateKas(){
+  const btn = document.getElementById('btnSimpanEdit');
+  btn.disabled = true;
+  btn.innerText = 'Loading...';
+  const kode=document.getElementById('editKode').value,
+        nama=document.getElementById('editNama').value,
+        bulan=document.getElementById('editBulan').value,
+        jumlah=document.getElementById('editJumlah').value,
+        keterangan=document.getElementById('editKeterangan').value;
+  if(!nama||!bulan||!jumlah){ alert("Lengkapi data!"); btn.disabled = false; btn.innerText = 'Simpan Perubahan'; return; }
+  fetch(`${URL}?action=editKas&password=admin123`,{
+    method:'POST',
+    body:new URLSearchParams({kode,nama,bulan,jumlah,keterangan})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status==='success'){ 
+      alert("Berhasil update"); 
+      closeModal(); 
+      clearEditForm(); 
+      loadKas(); 
+    } else alert("Gagal update");
+  }).finally(()=>{ btn.disabled = false; btn.innerText = 'Simpan Perubahan'; });
+}
+
+// Clear form setelah update
+function clearEditForm(){
+  document.getElementById('editKode').value = '';
+  document.getElementById('editNama').value = '';
+  document.getElementById('editBulan').value = '';
+  document.getElementById('editJumlah').value = '';
+  document.getElementById('editKeterangan').value = '';
+}
+
+function hapusKas(kode){
+  if(confirm("Hapus pembayaran ini?"))
+  fetch(`${URL}?action=deleteKas&password=admin123&kode=${kode}`,{method:'POST'})
+  .then(r=>r.json()).then(res=>{
+    if(res.status==='deleted'){ alert("Berhasil hapus"); loadKas(); }
+    else alert("Gagal hapus");
+  });
+}
+function tambahNama(){
+  const btn = document.getElementById('btnTambahNama');
+  btn.disabled = true;
+  btn.innerText = 'Loading...';
+  const nama = document.getElementById('namaBaru').value.trim();
+  if(!nama){ alert("Nama tidak boleh kosong!"); btn.disabled = false; btn.innerText = 'Tambah Nama'; return; }
+  if(daftarNama.includes(nama)){ alert("Nama sudah ada!"); btn.disabled = false; btn.innerText = 'Tambah Nama'; return; }
+  fetch(`${URL}?action=addSiswa&password=admin123`,{
+    method:'POST',
+    body: new URLSearchParams({nama})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status==='success'){
+      alert("Nama berhasil ditambahkan!"); document.getElementById('namaBaru').value=''; loadNama();
+    } else alert("Nama sudah ada!");
+  }).finally(()=>{ btn.disabled = false; btn.innerText = 'Tambah Nama'; });
+}
+updateLoginStatus(); loadNama(); loadKas();
+</script>
+
+</body>
+</html>

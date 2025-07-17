@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekap Kas Kelas</title>
+  <style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d89e5;
+  margin-bottom: 30px;
+}
+
+h3 {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2d89e5;
+  margin: 20px 0;
+}
+
+/* Tombol dan Input */
+.form-container {
+  max-width: 600px;
+  margin: 20px auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1.5px solid #cfd8dc;
+  font-size: 15px;
+  font-weight: 500;
+  background: #f9fbfd;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2d89e5;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(45,137,229,0.2);
+}
+
+button {
+  width: auto;
+  min-width: 120px;
+  max-width: 200px;
+  padding: 12px 20px;
+  margin: 10px 8px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2d89e5, #64b5f6);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(45,137,229,0.3);
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(45,137,229,0.4);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Rekap Box */
+.rekap-box {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  margin: 30px auto;
+  max-width: 800px;
+  text-align: center;
+  font-size: 18px;
+  color: #2d89e5;
+  font-weight: bold;
+}
+
+/* Tabel */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  margin: 20px 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+}
+
+th, td {
+  border: 1.5px solid #cfd8dc;
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+}
+
+th {
+  background: linear-gradient(135deg, #2d89e5, #64b5f6);
+  color: #fff;
+  font-weight: 700;
+}
+
+tr:nth-child(even) td {
+  background: #f7f9fc;
+}
+
+tr:hover td {
+  background: #e3f2fd;
+}
+
+/* Tombol Atas */
+.tombol-atas {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Pagination */
+#pagination, #paginationMasuk {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 20px auto;
+  width: auto;
+}
+
+#pagination button, #paginationMasuk button {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#pagination button:hover, #paginationMasuk button:hover {
+  background: #2d89e5;
+  color: #fff;
+}
+
+#pagination button.active, #paginationMasuk button.active {
+  background: linear-gradient(135deg, #2d89e5, #64b5f6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(45,137,229,0.4);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  body { padding: 15px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Rekapitulasi Kas Kelas</h2>
+
+<div class="tombol-atas">
+  <button id="loginBtn" onclick="login()">Login Bendahara</button>
+  <button onclick="window.location.href='index.html'">Home</button>
+</div>
+
+<div class="rekap-box">
+  <h3>Total Pemasukan: Rp <span id="totalMasuk">0</span></h3>
+  <h3>Total Pengeluaran: Rp <span id="totalKeluar">0</span></h3>
+  <h3>Saldo Akhir: Rp <span id="saldoAkhir">0</span></h3>
+</div>
+
+<h3>💸 Riwayat Pengeluaran</h3>
+<div id="pengeluaranForm" class="form-container" style="display:none;">
+  <input type="text" id="ketKeluar" placeholder="Keterangan">
+  <input type="number" id="jumlahKeluar" placeholder="Jumlah">
+  <input type="date" id="tanggalKeluar">
+  <button onclick="tambahPengeluaran()">Tambah Pengeluaran</button>
+</div>
+
+<div class="form-container">
+  <input type="date" id="filterTanggal" onchange="filterPengeluaranByTanggal()" placeholder="Filter Tanggal">
+  <button onclick="resetFilterTanggal()">Reset Filter</button>
+</div>
+
+<table id="tableKeluar">
+  <thead><tr><th>Keterangan</th><th>Tanggal</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+  <tbody></tbody>
+</table>
+<div id="pagination"></div>
+
+<h3>💰 Riwayat Pemasukan</h3>
+
+<div class="form-container">
+  <input type="text" id="filterNama" placeholder="Cari Nama..." oninput="filterMasukByNama()">
+  <button onclick="resetFilterNama()">Reset</button>
+</div>
+
+<table id="tableMasuk">
+  <thead><tr><th>Nama</th><th>Bulan</th><th>Tanggal</th><th>Jumlah</th><th>Keterangan</th></tr></thead>
+  <tbody></tbody>
+</table>
+<div id="paginationMasuk"></div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycby0X5aCR-1tEUtkSzDi8vVaPR7Zim6L9Dz-7GwgTh9RtHgPU1TFCddY88o7le972Qvw/exec";
+let pengeluaranData = [], pemasukanData = [], currentPage = 1, rowsPerPage = 10, currentPageMasuk = 1, rowsPerPageMasuk = 10;
+
+function updateLoginStatus(){
+  const isAdmin = sessionStorage.getItem('isAdmin');
+  document.getElementById('pengeluaranForm').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('loginBtn').innerText = isAdmin ? 'Logout Bendahara' : 'Login Bendahara';
+  document.getElementById('loginBtn').onclick = isAdmin ? logout : login;
+}
+
+function login(){
+  const pass = prompt("Password:");
+  if(pass==="admin123"){sessionStorage.setItem('isAdmin','true');alert("Login sukses!");updateLoginStatus();loadPengeluaran();}
+  else alert("Password salah!");
+}
+
+function logout(){sessionStorage.removeItem('isAdmin');alert("Logout!");location.reload();}
+
+function hitungSaldo(){
+  const masuk = parseInt(document.getElementById('totalMasuk').innerText.replace(/\D/g,''))||0;
+  const keluar = parseInt(document.getElementById('totalKeluar').innerText.replace(/\D/g,''))||0;
+  document.getElementById('saldoAkhir').innerText = (masuk - keluar).toLocaleString();
+}
+
+function loadKas(){
+  fetch(`${URL}?action=getKas`).then(r=>r.json()).then(data=>{
+    pemasukanData = data.slice(1).map(d=>({tanggal:d[0],nama:d[2],bulan:d[3],jumlah:parseInt(d[4])||0,ket:d[5]}));
+    pemasukanData.sort((a,b)=>new Date(b.tanggal)-new Date(a.tanggal));
+    currentPageMasuk=1;renderTableMasuk();updateTotalMasuk();
+  });
+}
+
+function loadPengeluaran(){
+  fetch(`${URL}?action=getPengeluaran`).then(r=>r.json()).then(data=>{
+    pengeluaranData = data.slice(1).map(d=>({kode:d[1],ket:d[2],tanggal:d[0],jumlah:parseInt(d[3])||0}));
+    pengeluaranData.sort((a,b)=>new Date(b.tanggal)-new Date(a.tanggal));
+    currentPage=1;renderTable();updateTotalPengeluaran();
+  });
+}
+
+function renderTable(){
+  const tbody=document.querySelector('#tableKeluar tbody');tbody.innerHTML="";
+  const filter=document.getElementById('filterTanggal').value;
+  const data=filter?pengeluaranData.filter(d=>new Date(d.tanggal).toISOString().split('T')[0]===filter):pengeluaranData;
+  const start=(currentPage-1)*rowsPerPage; const end=filter?data.length:start+rowsPerPage;
+  data.slice(start,end).forEach(d=>{
+    tbody.innerHTML+=`<tr><td>${d.ket}</td><td>${formatDate(d.tanggal)}</td><td>Rp ${d.jumlah.toLocaleString()}</td><td>${sessionStorage.getItem('isAdmin')?`<button onclick="openEdit('${d.kode}','${d.ket}','${d.jumlah}','${d.tanggal}')">Edit</button><button onclick="hapusPengeluaran('${d.kode}')">Hapus</button>`:'-'}</td></tr>`;
+  });
+  renderPagination(data.length, filter);
+  updateTotalPengeluaran(data);
+}
+
+function renderTableMasuk(){
+  const tbody=document.querySelector('#tableMasuk tbody');tbody.innerHTML="";
+  const filter=(document.getElementById('filterNama').value||"").toLowerCase();
+  const data=pemasukanData.filter(d=>d.nama.toLowerCase().includes(filter));
+  const start=(currentPageMasuk-1)*rowsPerPageMasuk; const end=start+rowsPerPageMasuk;
+  data.slice(start,end).forEach(d=>{
+    tbody.innerHTML+=`<tr><td>${d.nama}</td><td>${d.bulan}</td><td>${formatDate(d.tanggal)}</td><td>Rp ${d.jumlah.toLocaleString()}</td><td>${d.ket}</td></tr>`;
+  });
+  renderPaginationMasuk(data.length);
+}
+
+function renderPagination(length,filter){
+  const pg=document.getElementById('pagination');pg.innerHTML="";
+  if(filter)return;const total=Math.ceil(length/rowsPerPage);if(total<=1)return;
+  for(let i=1;i<=total;i++)pg.innerHTML+=`<button onclick="gotoPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
+}
+
+function renderPaginationMasuk(length){
+  const pg=document.getElementById('paginationMasuk');pg.innerHTML="";
+  const total=Math.ceil(length/rowsPerPageMasuk);if(total<=1)return;
+  for(let i=1;i<=total;i++)pg.innerHTML+=`<button onclick="gotoPageMasuk(${i})" class="${i===currentPageMasuk?'active':''}">${i}</button>`;
+}
+
+function gotoPage(p){currentPage=p;renderTable();}
+function gotoPageMasuk(p){currentPageMasuk=p;renderTableMasuk();}
+function filterPengeluaranByTanggal(){currentPage=1;renderTable();}
+function resetFilterTanggal(){document.getElementById('filterTanggal').value="";filterPengeluaranByTanggal();}
+function filterMasukByNama(){currentPageMasuk=1;renderTableMasuk();}
+function resetFilterNama(){document.getElementById('filterNama').value="";filterMasukByNama();}
+
+function updateTotalPengeluaran(d=pengeluaranData){
+  const total=d.reduce((a,b)=>a+b.jumlah,0);document.getElementById('totalKeluar').innerText=total.toLocaleString();hitungSaldo();
+}
+
+function updateTotalMasuk(){
+  const total=pemasukanData.reduce((a,b)=>a+b.jumlah,0);document.getElementById('totalMasuk').innerText=total.toLocaleString();hitungSaldo();
+}
+
+function tambahPengeluaran(){
+  const k=document.getElementById('ketKeluar').value,j=document.getElementById('jumlahKeluar').value,t=document.getElementById('tanggalKeluar').value;
+  if(!k||!j||!t)return alert("Isi semua!");const btn=document.querySelector('#pengeluaranForm button');
+  btn.innerText="Loading...";btn.disabled=true;
+  fetch(`${URL}?action=addPengeluaran&password=admin123`,{method:'POST',body:new URLSearchParams({keterangan:k,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
+    if(res.status==="success"){alert("Berhasil!");loadPengeluaran();document.getElementById('ketKeluar').value="";document.getElementById('jumlahKeluar').value="";document.getElementById('tanggalKeluar').value="";}
+    else alert("Gagal!");
+  }).finally(()=>{btn.innerText="Tambah Pengeluaran";btn.disabled=false;});
+}
+
+function openEdit(k,kd,j,t){
+  document.getElementById('kodeEdit').value=k;document.getElementById('ketEdit').value=kd;document.getElementById('jumlahEdit').value=j;
+  document.getElementById('tanggalEdit').value=new Date(t).toISOString().split('T')[0];document.getElementById('editModal').style.display='flex';
+}
+
+function closeModal(){document.getElementById('editModal').style.display='none';}
+
+function editPengeluaran(){
+  const k=document.getElementById('kodeEdit').value,ke=document.getElementById('ketEdit').value,j=document.getElementById('jumlahEdit').value,t=document.getElementById('tanggalEdit').value;
+  if(!ke||!j||!t)return alert("Isi semua!");const btn=document.querySelector('#editModal button');
+  btn.innerText="Loading...";btn.disabled=true;
+  fetch(`${URL}?action=editPengeluaran&password=admin123`,{method:'POST',body:new URLSearchParams({kode:k,keterangan:ke,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
+    if(res.status==="success"){alert("Update berhasil!");closeModal();loadPengeluaran();}
+    else alert("Gagal update!");
+  }).finally(()=>{btn.innerText="Simpan";btn.disabled=false;});
+}
+
+function hapusPengeluaran(k){
+  if(!confirm("Hapus pengeluaran?"))return;
+  fetch(`${URL}?action=deletePengeluaran&password=admin123&kode=${k}`,{method:'POST'}).then(r=>r.json()).then(res=>{
+    if(res.status==="deleted"){alert("Dihapus!");loadPengeluaran();}
+    else alert("Gagal hapus!");
+  });
+}
+
+function formatDate(d){const x=new Date(d);return!isNaN(x)?`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}/${x.getFullYear()}`:'-';}
+
+updateLoginStatus();loadKas();loadPengeluaran();
+</script>
+
+</body>
+</html>
