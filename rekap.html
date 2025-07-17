@@ -179,6 +179,31 @@ tr:hover td {
   h2 { font-size: 26px; }
   h3 { font-size: 18px; }
 }
+
+/* Fix agar tabel responsive */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  margin: 20px 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+  overflow-x: auto;
+  display: block;
+}
+
+/* Responsive wrapper untuk tabel */
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Perbaiki container supaya tidak melebihi layar */
+.form-container, .rekap-box {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
 </style>
 </head>
 
@@ -210,10 +235,12 @@ tr:hover td {
   <button onclick="resetFilterTanggal()">Reset Filter</button>
 </div>
 
-<table id="tableKeluar">
-  <thead><tr><th>Keterangan</th><th>Tanggal</th><th>Jumlah</th><th>Aksi</th></tr></thead>
-  <tbody></tbody>
-</table>
+<div class="table-container">
+    <table id="tableKeluar">
+    <thead><tr><th>Keterangan</th><th>Tanggal</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+    <tbody></tbody>
+    </table>
+ </div>
 <div id="pagination"></div>
 
 <h3>💰 Riwayat Pemasukan</h3>
@@ -223,10 +250,12 @@ tr:hover td {
   <button onclick="resetFilterNama()">Reset</button>
 </div>
 
-<table id="tableMasuk">
-  <thead><tr><th>Nama</th><th>Bulan</th><th>Tanggal</th><th>Jumlah</th><th>Keterangan</th></tr></thead>
-  <tbody></tbody>
-</table>
+<div class="table-container">
+    <table id="tableMasuk">
+    <thead><tr><th>Nama</th><th>Bulan</th><th>Tanggal</th><th>Jumlah</th><th>Keterangan</th></tr></thead>
+    <tbody></tbody>
+    </table>
+</div>
 <div id="paginationMasuk"></div>
 
 <script>
