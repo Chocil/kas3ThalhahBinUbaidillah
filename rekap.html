@@ -257,6 +257,19 @@ table {
     </table>
 </div>
 <div id="paginationMasuk"></div>
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
+  <div style="background:white; padding:20px; border-radius:15px; width:90%; max-width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+    <h3>Edit Pengeluaran</h3>
+    <input type="hidden" id="kodeEdit">
+    <input type="text" id="ketEdit" placeholder="Keterangan">
+    <input type="number" id="jumlahEdit" placeholder="Jumlah">
+    <input type="date" id="tanggalEdit">
+    <div style="display:flex; justify-content:space-between; margin-top:15px;">
+      <button onclick="editPengeluaran()">Simpan</button>
+      <button onclick="closeModal()" style="background:red;">Batal</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycby0X5aCR-1tEUtkSzDi8vVaPR7Zim6L9Dz-7GwgTh9RtHgPU1TFCddY88o7le972Qvw/exec";
