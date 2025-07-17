@@ -273,7 +273,12 @@ function loadPengeluaran(){
 function renderTable(){
   const tbody=document.querySelector('#tableKeluar tbody');tbody.innerHTML="";
   const filter=document.getElementById('filterTanggal').value;
-  const data=filter?pengeluaranData.filter(d=>new Date(d.tanggal).toISOString().split('T')[0]===filter):pengeluaranData;
+  const data=filter?pengeluaranData.filter(d=>{
+  const t=new Date(d.tanggal);
+  const tglFix=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,'0')+"-"+String(t.getDate()).padStart(2,'0');
+  return tglFix===filter;
+}):pengeluaranData;
+
   const start=(currentPage-1)*rowsPerPage; const end=filter?data.length:start+rowsPerPage;
   data.slice(start,end).forEach(d=>{
     tbody.innerHTML+=`<tr><td>${d.ket}</td><td>${formatDate(d.tanggal)}</td><td>Rp ${d.jumlah.toLocaleString()}</td><td>${sessionStorage.getItem('isAdmin')?`<button onclick="openEdit('${d.kode}','${d.ket}','${d.jumlah}','${d.tanggal}')">Edit</button><button onclick="hapusPengeluaran('${d.kode}')">Hapus</button>`:'-'}</td></tr>`;
