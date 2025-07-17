@@ -319,9 +319,19 @@ function renderTable(){
 }):pengeluaranData;
 
   const start=(currentPage-1)*rowsPerPage; const end=filter?data.length:start+rowsPerPage;
-  data.slice(start,end).forEach(d=>{
-    tbody.innerHTML+=`<tr><td>${d.ket}</td><td>${formatDate(d.tanggal)}</td><td>Rp ${d.jumlah.toLocaleString()}</td><td>${sessionStorage.getItem('isAdmin')?`<button onclick="openEdit('${d.kode}','${d.ket}','${d.jumlah}','${d.tanggal}')">Edit</button><button onclick="hapusPengeluaran('${d.kode}')">Hapus</button>`:'-'}</td></tr>`;
-  });
+  data.slice(start, end).forEach(d => {
+  const warnaKet = (d.ket || '').toLowerCase().includes('masuk') ? 'background:#d4edda;color:#155724;font-weight:600;' : '';
+  tbody.innerHTML += `
+    <tr>
+      <td style="${warnaKet}">${d.ket}</td>
+      <td>${formatDate(d.tanggal)}</td>
+      <td>Rp ${d.jumlah.toLocaleString()}</td>
+      <td>${sessionStorage.getItem('isAdmin') ? 
+        `<button onclick="openEdit('${d.kode}','${d.ket}','${d.jumlah}','${d.tanggal}')">Edit</button>
+         <button onclick="hapusPengeluaran('${d.kode}')">Hapus</button>` : '-'}</td>
+    </tr>`;
+});
+
   renderPagination(data.length, filter);
   updateTotalPengeluaran(data);
 }
@@ -357,8 +367,23 @@ function filterMasukByNama(){currentPageMasuk=1;renderTableMasuk();}
 function resetFilterNama(){document.getElementById('filterNama').value="";filterMasukByNama();}
 
 function updateTotalPengeluaran(d=pengeluaranData){
-  const total=d.reduce((a,b)=>a+b.jumlah,0);document.getElementById('totalKeluar').innerText=total.toLocaleString();hitungSaldo();
+  let totalKeluar = 0, totalMasukDariKeluar = 0;
+  d.forEach(b=>{
+    if((b.ket || '').toLowerCase().includes("masuk")){
+      totalMasukDariKeluar += b.jumlah;
+    } else {
+      totalKeluar += b.jumlah;
+    }
+  });
+  document.getElementById('totalKeluar').innerText = totalKeluar.toLocaleString();
+
+  // Ambil totalMasuk asli dari sheet uang masuk
+  const totalMasuk = pemasukanData.reduce((a,b)=>a+b.jumlah,0) + totalMasukDariKeluar;
+  document.getElementById('totalMasuk').innerText = totalMasuk.toLocaleString();
+
+  hitungSaldo();
 }
+
 
 function updateTotalMasuk(){
   const total=pemasukanData.reduce((a,b)=>a+b.jumlah,0);document.getElementById('totalMasuk').innerText=total.toLocaleString();hitungSaldo();
