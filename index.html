@@ -283,10 +283,6 @@ button:hover {
     <option value="">Pilih Tahun</option>
     <option>2025</option>
     <option>2026</option>
-    <option>2027</option>
-    <option>2028</option>
-    <option>2029</option>
-    <option>2030</option>
   </select>
   <input type="number" id="jumlah" placeholder="Jumlah (contoh: 30000)">
   <button id="btnTambahKas" onclick="tambahKas()">Tambah Data</button>
@@ -311,10 +307,6 @@ button:hover {
       <option value="">Pilih Tahun</option>
       <option>2025</option>
       <option>2026</option>
-      <option>2027</option>
-      <option>2028</option>
-      <option>2029</option>
-      <option>2030</option>
     </select>
 
     <input type="number" id="editJumlah" placeholder="Jumlah">
@@ -372,7 +364,7 @@ function loadNama(){
 
   const tahunSelect = document.getElementById('tahunFilter');
   tahunSelect.innerHTML = '<option value="">Pilih Tahun</option>';
-  for(let t=2025; t<=2030; t++){
+  for(let t=2025; t<=2026; t++){
     tahunSelect.innerHTML += `<option>${t}</option>`;
   }
 }
