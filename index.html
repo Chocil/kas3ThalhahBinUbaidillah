@@ -279,9 +279,19 @@ button:hover {
     <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
     <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
   </select>
+  <select id="tahunSelect">
+    <option value="">Pilih Tahun</option>
+    <option>2025</option>
+    <option>2026</option>
+    <option>2027</option>
+    <option>2028</option>
+    <option>2029</option>
+    <option>2030</option>
+  </select>
   <input type="number" id="jumlah" placeholder="Jumlah (contoh: 30000)">
   <button id="btnTambahKas" onclick="tambahKas()">Tambah Data</button>
 </div>
+
 
 <div id="kalenderBox" class="kalender-box"></div>
 
@@ -297,6 +307,16 @@ button:hover {
       <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
       <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
     </select>
+    <select id="editTahun">
+      <option value="">Pilih Tahun</option>
+      <option>2025</option>
+      <option>2026</option>
+      <option>2027</option>
+      <option>2028</option>
+      <option>2029</option>
+      <option>2030</option>
+    </select>
+
     <input type="number" id="editJumlah" placeholder="Jumlah">
     <input type="text" id="editKeterangan" placeholder="Keterangan">
     <button id="btnSimpanEdit" onclick="updateKas()">Simpan Perubahan</button>
@@ -304,7 +324,7 @@ button:hover {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycby0X5aCR-1tEUtkSzDi8vVaPR7Zim6L9Dz-7GwgTh9RtHgPU1TFCddY88o7le972Qvw/exec";
+const URL = "https://script.google.com/macros/s/AKfycbwm_G9yevEWdXuwMwStOIDmvofk8xHSA1G_9z4fq87iNf8KVGIAj0Kr5q_YdQ2_k1N-/exec";
 let allKas = [], daftarNama = [];
 
 function login(){
@@ -352,7 +372,7 @@ function loadNama(){
 
   const tahunSelect = document.getElementById('tahunFilter');
   tahunSelect.innerHTML = '<option value="">Pilih Tahun</option>';
-  for(let t=2025; t<=2035; t++){
+  for(let t=2025; t<=2030; t++){
     tahunSelect.innerHTML += `<option>${t}</option>`;
   }
 }
@@ -363,33 +383,52 @@ function loadKas(){
     tampilkanKalender();
   });
 }
-function tampilkanKalender(){
+
+function tampilkanKalender() {
   const nama = document.getElementById('namaFilter').value;
   const tahun = document.getElementById('tahunFilter').value;
   const box = document.getElementById('kalenderBox');
   box.innerHTML = "";
-  if(!nama || !tahun) return;
+
+  if (!nama || !tahun) return;
+
   const isAdmin = sessionStorage.getItem('isAdmin');
   const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-  bulanList.forEach(bulan=>{
-    const pembayaran = allKas.find(d=>{
-      const tgl = d[0]; // kolom tanggal
-      const namaD = d[2];
-      const bulanD = d[3];
-      const tahunD = tgl?.split("-")[0] || "";
-      return namaD===nama && bulanD===bulan && tahunD===tahun;
+
+  bulanList.forEach(bulan => {
+    const pembayaran = allKas.find(d => {
+      if (!d || d.length < 7) return false;  // validasi data kosong
+      
+      const namaD = (d[2] || "").toString().trim().toLowerCase();
+      const bulanD = (d[3] || "").toString().trim().toLowerCase();
+      const tahunD = (d[6] || "").toString().trim();
+
+      return namaD === nama.toLowerCase().trim() &&
+             bulanD === bulan.toLowerCase() &&
+             tahunD === tahun;
     });
+
     const isi = pembayaran
-  ? `<div class="status sudah">✅ Sudah Bayar<br>Rp ${parseInt(pembayaran[4]).toLocaleString()}<br>${pembayaran[5] || ''}</div>
-     ${isAdmin ? `
-     <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}')">Edit</button>
-     <button onclick="hapusKas('${pembayaran[1]}')">Hapus</button>` : ''}`
-  : `<div class="status belum">❌ Belum Bayar</div>`;
+      ? `
+        <div class="status sudah">✅ Sudah Bayar<br>
+        Rp ${parseInt(pembayaran[4]).toLocaleString()}<br>${pembayaran[5] || ''}</div>
+        ${isAdmin ? `
+          <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}')">Edit</button>
+          <button onclick="hapusKas('${pembayaran[1]}')">Hapus</button>
+        ` : ''}
+      `
+      : `<div class="status belum">❌ Belum Bayar</div>`;
 
-
-    box.innerHTML += `<div class="kalender-item"><h3>${bulan}</h3>${isi}</div>`;
+    box.innerHTML += `
+      <div class="kalender-item">
+        <h3>${bulan}</h3>
+        ${isi}
+      </div>
+    `;
   });
 }
+
+
 function resetFilter(){
   document.getElementById('namaFilter').value = '';
   document.getElementById('tahunFilter').value = '';
@@ -403,20 +442,33 @@ function tambahKas(){
   btn.innerText = 'Loading...';
   const nama = document.getElementById('namaSelect').value,
         bulan = document.getElementById('bulanSelect').value,
+        tahun = document.getElementById('tahunSelect').value,
         jumlah = document.getElementById('jumlah').value,
         keterangan = 'Uang Kas';
-  if(!nama || !bulan || !jumlah){
+  if(!nama || !bulan || !tahun || !jumlah){
     alert("Lengkapi semua data!"); btn.disabled = false; btn.innerText = 'Tambah Data'; return;
   }
-  const sudahAda = allKas.some(d => d[2] === nama && d[3] === bulan);
-  if(sudahAda){ alert("❗ Sudah bayar!"); btn.disabled = false; btn.innerText = 'Tambah Data'; return; }
+
+  const sudahAda = allKas.some(d => {
+    const namaD = (d[2] || "").toString().trim().toLowerCase();
+    const bulanD = (d[3] || "").toString().trim().toLowerCase();
+    const tahunD = (d[6] || "").toString().trim();
+    return namaD === nama.trim().toLowerCase() && bulanD === bulan.trim().toLowerCase() && tahunD === tahun.trim();
+  });
+
+  if(sudahAda){
+    alert("❗ Data untuk bulan dan tahun tersebut sudah ada!");
+    btn.disabled = false; btn.innerText = 'Tambah Data'; return;
+  }
+
   fetch(`${URL}?action=addKas&password=admin123`,{
     method:'POST',
-    body: new URLSearchParams({nama,bulan,jumlah,keterangan})
+    body: new URLSearchParams({nama,bulan,tahun,jumlah,keterangan})
   }).then(r=>r.json()).then(res=>{
     if(res.status==='success'){ 
       alert("Data ditambahkan!"); 
       document.getElementById('bulanSelect').value='';
+      document.getElementById('tahunSelect').value='';
       document.getElementById('jumlah').value='';
       namaSelect.setChoiceByValue('');
       loadKas(); 
@@ -424,20 +476,23 @@ function tambahKas(){
   }).finally(()=>{ btn.disabled = false; btn.innerText = 'Tambah Data'; });
 }
 
-function openEdit(kode,nama,bulan,jumlah,keterangan){
+function openEdit(kode,nama,bulan,jumlah,keterangan,tahun){
   document.getElementById('editKode').value=kode;
   document.getElementById('editNama').value=nama;
   document.getElementById('editJumlah').value=jumlah;
   document.getElementById('editKeterangan').value=keterangan;
-  
+
+  // Tahun otomatis di-select
+  document.getElementById('editTahun').value = tahun;
+
+  // Setup bulan select
   const bulanSelect = document.getElementById('editBulan');
   bulanSelect.innerHTML = '<option value="">Pilih Bulan</option>';
   const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-
+  
   bulanList.forEach(bul => {
-    // Cek apakah bulan sudah ada
     const sudahAda = allKas.some(d => 
-      d[2] === nama && d[3] === bul && d[1] !== kode
+      d[2] === nama && d[3] === bul && d[1] !== kode && d[6] === tahun
     );
     const disable = sudahAda ? 'disabled' : '';
     bulanSelect.innerHTML += `<option value="${bul}" ${disable}>${bul} ${sudahAda ? '(Sudah Bayar)' : ''}</option>`;
@@ -446,6 +501,7 @@ function openEdit(kode,nama,bulan,jumlah,keterangan){
   bulanSelect.value = bulan;
   document.getElementById('editModal').style.display='block';
 }
+
 
 function closeModal(){
   document.getElementById('editModal').style.display='none';
@@ -457,12 +513,13 @@ function updateKas(){
   const kode=document.getElementById('editKode').value,
         nama=document.getElementById('editNama').value,
         bulan=document.getElementById('editBulan').value,
+        tahun=document.getElementById('editTahun').value,
         jumlah=document.getElementById('editJumlah').value,
         keterangan=document.getElementById('editKeterangan').value;
-  if(!nama||!bulan||!jumlah){ alert("Lengkapi data!"); btn.disabled = false; btn.innerText = 'Simpan Perubahan'; return; }
+  if(!nama||!bulan||!tahun||!jumlah){ alert("Lengkapi data!"); btn.disabled = false; btn.innerText = 'Simpan Perubahan'; return; }
   fetch(`${URL}?action=editKas&password=admin123`,{
     method:'POST',
-    body:new URLSearchParams({kode,nama,bulan,jumlah,keterangan})
+    body:new URLSearchParams({kode,nama,bulan,tahun,jumlah,keterangan})
   }).then(r=>r.json()).then(res=>{
     if(res.status==='success'){ 
       alert("Berhasil update"); 
@@ -472,6 +529,7 @@ function updateKas(){
     } else alert("Gagal update");
   }).finally(()=>{ btn.disabled = false; btn.innerText = 'Simpan Perubahan'; });
 }
+
 
 // Clear form setelah update
 function clearEditForm(){
