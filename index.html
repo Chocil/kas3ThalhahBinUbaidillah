@@ -5,6 +5,8 @@
   <!-- Tambahkan di bagian <head> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Emblema+One&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
   <title>Kas Kelas Kalender</title>
@@ -19,12 +21,21 @@ body {
 }
 
 h2 {
+  font-family: 'Emblema One', cursive;
   text-align: center;
   font-size: 32px;
-  font-weight: 700;
   color: #2d89e5;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
+
+h2 .subjudul {
+  font-family: 'Emblema One', cursive;
+  text-align: center;
+  font-size: 32px;
+  color: #2d89e5;
+  margin-bottom: 20px;
+}
+
 
 /* ====== KOTAK UTAMA FORM ====== */
 .container {
@@ -148,11 +159,11 @@ button:hover {
 }
 
 .sudah {
-  background: linear-gradient(135deg, #4CAF50, #81C784);
+  background: linear-gradient(135deg, #000000, #81C784);
 }
 
 .belum {
-  background: linear-gradient(135deg, #e53935, #ef5350);
+  background: linear-gradient(135deg, #000000, #ef5350);
 }
 
 .kalender-item button {
@@ -221,6 +232,9 @@ button:hover {
   h2 {
     font-size: 26px;
   }
+  h2 .subjudul {
+    font-size: 26px;
+}
   .kalender-box {
     grid-template-columns: 1fr;
   }
@@ -237,7 +251,8 @@ button:hover {
 </head>
 <body>
 
-<h2>📌 Kas Kelas 3 Thalhah Bin Ubaidillah</h2>
+<h2>📌 Kas Kelas 3<br><span class="subjudul">Thalhah Bin Ubaidillah</span></h2>
+
 
 <div id="loginBox">
   <button id="loginBtn" onclick="login()">Login Bendahara</button>
