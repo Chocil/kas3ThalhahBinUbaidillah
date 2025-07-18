@@ -269,7 +269,7 @@ tr:hover td {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbxO6ECxT3ILuxCPjKb4PmBD2eHPbOH4jMufucGssatbx1HqVp-68L_dWTVoV1Jprhus/exec";
+const URL = "https://script.google.com/macros/s/AKfycbzOCzTJcSGipWHeKsvCNPNRT6WPwZRYlsKt8_TCulFxzeRzffqWcWxEKUajPuBbc7N7/exec";
 let pengeluaranData = [], pemasukanData = [], currentPage = 1, rowsPerPage = 10, currentPageMasuk = 1, rowsPerPageMasuk = 10;
 
 function updateLoginStatus(){
@@ -421,7 +421,7 @@ function tambahPengeluaran(){
   const k=document.getElementById('ketKeluar').value,j=document.getElementById('jumlahKeluar').value,t=document.getElementById('tanggalKeluar').value;
   if(!k||!j||!t)return alert("Isi semua!");const btn=document.querySelector('#pengeluaranForm button');
   btn.innerText="Loading...";btn.disabled=true;
-  fetch(`${URL}?action=addPengeluaran&password=admin123`,{method:'POST',body:new URLSearchParams({keterangan:k,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
+  fetch(`${URL}?action=addPengeluaran`,{method:'POST',body:new URLSearchParams({keterangan:k,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
     if(res.status==="success"){alert("Berhasil!");loadPengeluaran();document.getElementById('ketKeluar').value="";document.getElementById('jumlahKeluar').value="";document.getElementById('tanggalKeluar').value="";}
     else alert("Gagal!");
   }).finally(()=>{btn.innerText="Tambah Pengeluaran";btn.disabled=false;});
@@ -438,7 +438,7 @@ function editPengeluaran(){
   const k=document.getElementById('kodeEdit').value,ke=document.getElementById('ketEdit').value,j=document.getElementById('jumlahEdit').value,t=document.getElementById('tanggalEdit').value;
   if(!ke||!j||!t)return alert("Isi semua!");const btn=document.querySelector('#editModal button');
   btn.innerText="Loading...";btn.disabled=true;
-  fetch(`${URL}?action=editPengeluaran&password=admin123`,{method:'POST',body:new URLSearchParams({kode:k,keterangan:ke,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
+  fetch(`${URL}?action=editPengeluaran`,{method:'POST',body:new URLSearchParams({kode:k,keterangan:ke,jumlah:j,tanggal:t})}).then(r=>r.json()).then(res=>{
     if(res.status==="success"){alert("Update berhasil!");closeModal();loadPengeluaran();}
     else alert("Gagal update!");
   }).finally(()=>{btn.innerText="Simpan";btn.disabled=false;});
@@ -446,7 +446,7 @@ function editPengeluaran(){
 
 function hapusPengeluaran(k){
   if(!confirm("Hapus pengeluaran?"))return;
-  fetch(`${URL}?action=deletePengeluaran&password=admin123&kode=${k}`,{method:'POST'}).then(r=>r.json()).then(res=>{
+  fetch(`${URL}?action=deletePengeluaran&kode=${k}`,{method:'POST'}).then(r=>r.json()).then(res=>{
     if(res.status==="deleted"){alert("Dihapus!");loadPengeluaran();}
     else alert("Gagal hapus!");
   });
