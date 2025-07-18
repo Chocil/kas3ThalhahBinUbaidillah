@@ -273,16 +273,16 @@ button:hover {
 <div id="adminForm" style="display:none;">
   <h3>Tambah Pembayaran</h3>
   <select id="namaSelect"></select>
+  <select id="tahunSelect">
+    <option value="">Pilih Tahun</option>
+    <option>2025</option>
+    <option>2026</option>
+  </select>
   <select id="bulanSelect">
     <option value="">Pilih Bulan</option>
     <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
     <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
     <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
-  </select>
-  <select id="tahunSelect">
-    <option value="">Pilih Tahun</option>
-    <option>2025</option>
-    <option>2026</option>
   </select>
   <input type="number" id="jumlah" placeholder="Jumlah (contoh: 30000)">
   <button id="btnTambahKas" onclick="tambahKas()">Tambah Data</button>
@@ -316,28 +316,55 @@ button:hover {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbwm_G9yevEWdXuwMwStOIDmvofk8xHSA1G_9z4fq87iNf8KVGIAj0Kr5q_YdQ2_k1N-/exec";
+const URL = "https://script.google.com/macros/s/AKfycbxO6ECxT3ILuxCPjKb4PmBD2eHPbOH4jMufucGssatbx1HqVp-68L_dWTVoV1Jprhus/exec";
 let allKas = [], daftarNama = [];
 
 function login(){
   const pass = prompt("Password Bendahara:");
-  if(pass==="admin123"){
-    sessionStorage.setItem('isAdmin','true');
-    alert("Login Berhasil!"); updateLoginStatus();
-  } else alert("Password salah!");
+  if(!pass) return;
+
+  fetch(`${URL}?action=cekPassword&password=${encodeURIComponent(pass)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.valid){
+        sessionStorage.setItem('isAdmin','true');
+        alert("Login Berhasil!");
+        updateLoginStatus();
+      } else {
+        alert("Password salah!");
+      }
+    }).catch(()=>alert("❗ Gagal koneksi ke server!"));
 }
-function logout(){
-  sessionStorage.removeItem('isAdmin');
-  alert("Logout Berhasil!"); updateLoginStatus();
-}
+
 function updateLoginStatus(){
-  const isAdmin = sessionStorage.getItem('isAdmin');
-  document.getElementById('adminForm').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('tambahNamaForm').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('loginBtn').innerText = isAdmin ? 'Logout Bendahara' : 'Login Bendahara';
-  document.getElementById('loginBtn').onclick = isAdmin ? logout : login;
+  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const loginBtn = document.getElementById('loginBtn');
+
+  if(!isAdmin){
+    // tampilan default
+    document.getElementById('adminForm').style.display = 'none';
+    document.getElementById('tambahNamaForm').style.display = 'none';
+    loginBtn.innerText = 'Login Bendahara';
+    loginBtn.onclick = login;
+    return;
+  }
+
+  // jika sudah login
+  document.getElementById('adminForm').style.display = 'block';
+  document.getElementById('tambahNamaForm').style.display = 'block';
+  loginBtn.innerText = 'Logout';
+  loginBtn.onclick = logout;
   tampilkanKalender();
 }
+
+
+function logout(){
+  sessionStorage.removeItem('isAdmin');
+  alert("Logout berhasil!");
+  updateLoginStatus();
+  resetFilter();
+}
+
 
 let namaFilter, namaSelect;
 
@@ -405,7 +432,7 @@ function tampilkanKalender() {
         <div class="status sudah">✅ Sudah Bayar<br>
         Rp ${parseInt(pembayaran[4]).toLocaleString()}<br>${pembayaran[5] || ''}</div>
         ${isAdmin ? `
-          <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}')">Edit</button>
+          <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}','${pembayaran[6]}')">Edit</button>
           <button onclick="hapusKas('${pembayaran[1]}')">Hapus</button>
         ` : ''}
       `
@@ -473,19 +500,20 @@ function openEdit(kode,nama,bulan,jumlah,keterangan,tahun){
   document.getElementById('editNama').value=nama;
   document.getElementById('editJumlah').value=jumlah;
   document.getElementById('editKeterangan').value=keterangan;
-
-  // Tahun otomatis di-select
   document.getElementById('editTahun').value = tahun;
 
-  // Setup bulan select
   const bulanSelect = document.getElementById('editBulan');
   bulanSelect.innerHTML = '<option value="">Pilih Bulan</option>';
   const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-  
+
   bulanList.forEach(bul => {
     const sudahAda = allKas.some(d => 
-      d[2] === nama && d[3] === bul && d[1] !== kode && d[6] === tahun
+      (d[2] || "").toString().trim().toLowerCase() === nama.trim().toLowerCase() &&
+      (d[3] || "").toString().trim().toLowerCase() === bul.trim().toLowerCase() &&
+      (d[6] || "").toString().trim() === tahun.trim() &&
+      d[1] !== kode
     );
+
     const disable = sudahAda ? 'disabled' : '';
     bulanSelect.innerHTML += `<option value="${bul}" ${disable}>${bul} ${sudahAda ? '(Sudah Bayar)' : ''}</option>`;
   });
@@ -494,6 +522,27 @@ function openEdit(kode,nama,bulan,jumlah,keterangan,tahun){
   document.getElementById('editModal').style.display='block';
 }
 
+document.getElementById('editTahun').addEventListener('change', function(){
+  const kode = document.getElementById('editKode').value;
+  const nama = document.getElementById('editNama').value;
+  const tahun = this.value;
+
+  const bulanSelect = document.getElementById('editBulan');
+  bulanSelect.innerHTML = '<option value="">Pilih Bulan</option>';
+  const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+  bulanList.forEach(bul => {
+    const sudahAda = allKas.some(d => 
+      (d[2] || "").toString().trim().toLowerCase() === nama.trim().toLowerCase() &&
+      (d[3] || "").toString().trim().toLowerCase() === bul.trim().toLowerCase() &&
+      (d[6] || "").toString().trim() === tahun.trim() &&
+      d[1] !== kode
+    );
+
+    const disable = sudahAda ? 'disabled' : '';
+    bulanSelect.innerHTML += `<option value="${bul}" ${disable}>${bul} ${sudahAda ? '(Sudah Bayar)' : ''}</option>`;
+  });
+});
 
 function closeModal(){
   document.getElementById('editModal').style.display='none';
@@ -540,6 +589,35 @@ function hapusKas(kode){
     else alert("Gagal hapus");
   });
 }
+
+document.getElementById('namaSelect').addEventListener('change', updateBulanTambah);
+document.getElementById('tahunSelect').addEventListener('change', updateBulanTambah);
+
+function updateBulanTambah(){
+  const nama = document.getElementById('namaSelect').value;
+  const tahun = document.getElementById('tahunSelect').value;
+  const bulanSelect = document.getElementById('bulanSelect');
+
+  if(!nama || !tahun){
+    bulanSelect.innerHTML = `<option value="">Pilih Bulan</option>`;
+    return;
+  }
+
+  bulanSelect.innerHTML = `<option value="">Pilih Bulan</option>`;
+  const bulanList = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+  bulanList.forEach(bul => {
+    const sudahAda = allKas.some(d =>
+      String(d[2] || '').toLowerCase().trim() === nama.toLowerCase().trim() &&
+      String(d[3] || '').toLowerCase().trim() === bul.toLowerCase().trim() &&
+      String(d[6] || '').trim() === tahun.trim()
+    );
+    const disable = sudahAda ? 'disabled' : '';
+    bulanSelect.innerHTML += `<option value="${bul}" ${disable}>${bul} ${sudahAda ? '(Sudah Bayar)' : ''}</option>`;
+  });
+}
+
+
 function tambahNama(){
   const btn = document.getElementById('btnTambahNama');
   btn.disabled = true;
@@ -556,7 +634,16 @@ function tambahNama(){
     } else alert("Nama sudah ada!");
   }).finally(()=>{ btn.disabled = false; btn.innerText = 'Tambah Nama'; });
 }
-updateLoginStatus(); loadNama(); loadKas();
+
+function init(){
+  
+  updateLoginStatus();
+  loadNama();
+  loadKas();
+}
+
+init();
+
 </script>
 
 </body>
