@@ -269,23 +269,51 @@ tr:hover td {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbwm_G9yevEWdXuwMwStOIDmvofk8xHSA1G_9z4fq87iNf8KVGIAj0Kr5q_YdQ2_k1N-/exec";
+const URL = "https://script.google.com/macros/s/AKfycbxO6ECxT3ILuxCPjKb4PmBD2eHPbOH4jMufucGssatbx1HqVp-68L_dWTVoV1Jprhus/exec";
 let pengeluaranData = [], pemasukanData = [], currentPage = 1, rowsPerPage = 10, currentPageMasuk = 1, rowsPerPageMasuk = 10;
 
 function updateLoginStatus(){
-  const isAdmin = sessionStorage.getItem('isAdmin');
-  document.getElementById('pengeluaranForm').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('loginBtn').innerText = isAdmin ? 'Logout Bendahara' : 'Login Bendahara';
-  document.getElementById('loginBtn').onclick = isAdmin ? logout : login;
+  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const loginBtn = document.getElementById('loginBtn');
+
+  if(isAdmin){
+    // TAMPILAN ADMIN AKTIF
+    document.getElementById('pengeluaranForm').style.display = 'block';
+    loginBtn.innerText = 'Logout Bendahara';
+    loginBtn.onclick = logout;
+  } else {
+    // TAMPILAN NON ADMIN
+    document.getElementById('pengeluaranForm').style.display = 'none';
+    loginBtn.innerText = 'Login Bendahara';
+    loginBtn.onclick = login;
+  }
 }
 
 function login(){
-  const pass = prompt("Password:");
-  if(pass==="admin123"){sessionStorage.setItem('isAdmin','true');alert("Login sukses!");updateLoginStatus();loadPengeluaran();}
-  else alert("Password salah!");
+  const pass = prompt("Password Bendahara:");
+  if(!pass) return;
+  
+  fetch(`${URL}?action=cekPassword&password=${encodeURIComponent(pass)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.valid){
+        sessionStorage.setItem('isAdmin','true');
+        alert("Login Berhasil!");
+        updateLoginStatus();
+        loadPengeluaran(); // refresh data
+      } else {
+        alert("Password salah!");
+      }
+    })
+    .catch(()=>alert("❗ Gagal koneksi ke server!"));
 }
 
-function logout(){sessionStorage.removeItem('isAdmin');alert("Logout!");location.reload();}
+function logout(){
+  sessionStorage.removeItem('isAdmin');
+  alert("Logout berhasil!");
+  updateLoginStatus();
+  loadPengeluaran(); // refresh data non-admin
+}
 
 function hitungSaldo(){
   const masuk = parseInt(document.getElementById('totalMasuk').innerText.replace(/\D/g,''))||0;
