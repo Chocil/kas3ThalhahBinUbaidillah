@@ -120,68 +120,117 @@ button:hover {
 }
 
 /* ====== KALENDER BOX ====== */
+/* ====== KOTAK KALENDER ====== */
 .kalender-box {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 25px;
   margin: 30px auto;
-  max-width: 900px;
+  max-width: 450px;
+  padding: 20px;
 }
 
 /* ====== ITEM KALENDER ====== */
 .kalender-item {
-  background: #e7e3e3;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
-  padding: 20px;
+  background: #ffffff;
+  border-radius: 25px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  padding: 20px 25px 30px;
   text-align: center;
-  transition: 0.3s;
-}
-
-.kalender-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  position: relative;
 }
 
 .kalender-item h3 {
+  font-size: 38px;
   font-family: 'Emblema One', cursive;
-  font-size: 35px;
-  color: #2d89e5;
-  background: linear-gradient(135deg, #2d49e5, #6473f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #f71e1e;
+  background: linear-gradient(135deg, #d7e4f0, #e0e0e0);
+  border-radius: 25px;
+  margin-top: -5px;
   margin-bottom: 15px;
-  margin-top: -10px; /* Geser ke atas */
-  text-shadow: 2px 2px 8px rgba(45,137,229,0.2);
+  line-height: 1;
 }
 
 
-
+/* ====== STATUS BOX ====== */
 .status {
-  padding: 10px;
-  margin-bottom: 10px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 15px;
+  margin: 0 auto 20px;
+  width: 90%;
+  padding: 18px 20px;
+  font-weight: bold;
   color: white;
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: 20px;
+  font-size: 18px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  margin-bottom: -5px;
 }
 
+/* ====== SUDAH BAYAR (HIJAU) ====== */
 .sudah {
-  background: linear-gradient(135deg, #00c853, #b2ff59);
-  font-size: 16px;
-  padding: 12px;
+  background: linear-gradient(135deg, #00b09b, #96c93d);
 }
+
+/* ====== BELUM BAYAR (MERAH) ====== */
 .belum {
-  background: linear-gradient(135deg, #d50000, #ff8a80);
+  background: linear-gradient(135deg, #d32f2f, #f44336);
+}
+
+/* ====== ICON BULAT ====== */
+.status::before {
+  content: "✔️";
+  font-size: 28px;
+  background: white;
+  color: #4CAF50;
+  border-radius: 50%;
+  padding: 5px 10px;
+  flex-shrink: 0;
+}
+
+/* ICON BELUM BAYAR */
+.belum::before {
+  content: "❌";
+  color: #d32f2f;
+}
+
+/* ====== TEKS STATUS ====== */
+.status-text {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status-text span {
   font-size: 16px;
-  padding: 12px;
+  font-weight: normal;
 }
 
-
+/* ====== TOMBOL EDIT & HAPUS ====== */
 .kalender-item button {
-  width: 100%;
-  margin-top: 10px;
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  font-size: 16px;
+  color: white;
+  background: linear-gradient(135deg, #2196f3, #64b5f6);
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(33,150,243,0.3);
+  transition: 0.2s;
 }
+
+.kalender-item button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(33,150,243,0.4);
+}
+
 
 /* ====== MODAL ====== */
 .modal {
@@ -442,14 +491,14 @@ function tampilkanKalender() {
 
     const isi = pembayaran
       ? `
-        <div class="status sudah">✅ Sudah Bayar<br>
+        <div class="status sudah"> Sudah Bayar<br>
         Rp ${parseInt(pembayaran[4]).toLocaleString()}<br>${pembayaran[5] || ''}</div>
         ${isAdmin ? `
           <button onclick="openEdit('${pembayaran[1]}','${pembayaran[2]}','${bulan}','${pembayaran[4]}','${pembayaran[5]}','${pembayaran[6]}')">Edit</button>
           <button onclick="hapusKas('${pembayaran[1]}')">Hapus</button>
         ` : ''}
       `
-      : `<div class="status belum">❌ Belum Bayar</div>`;
+      : `<div class="status belum"> Belum Bayar</div>`;
 
     box.innerHTML += `
       <div class="kalender-item">
