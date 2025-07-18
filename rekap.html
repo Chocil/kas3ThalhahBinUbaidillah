@@ -239,20 +239,24 @@ tr:hover td {
  </div>
 <div id="pagination"></div>
 
-<h3>💰 Riwayat Pemasukan Kas</h3>
 
-<div class="form-container">
+<!-- <h3>💰 Riwayat Pemasukan Kas</h3> -->
+
+<div class="form-container" style="display: none;">
   <input type="text" id="filterNama" placeholder="Cari Nama..." oninput="filterMasukByNama()">
   <button onclick="resetFilterNama()">Reset</button>
 </div>
 
-<div class="table-container">
+<div class="table-container" style="display: none;">
     <table id="tableMasuk">
     <thead><tr><th>Nama</th><th>Bulan</th><th>Tanggal</th><th>Jumlah</th><th>Keterangan</th></tr></thead>
     <tbody></tbody>
     </table>
 </div>
-<div id="paginationMasuk"></div>
+
+<div id="paginationMasuk" style="display: none;"></div>
+
+
 
 <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
   <div style="background:white; padding:20px; border-radius:15px; width:90%; max-width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
