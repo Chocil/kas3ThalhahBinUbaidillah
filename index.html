@@ -317,7 +317,7 @@ button:hover {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbxO6ECxT3ILuxCPjKb4PmBD2eHPbOH4jMufucGssatbx1HqVp-68L_dWTVoV1Jprhus/exec";
+const URL = "https://script.google.com/macros/s/AKfycbzOCzTJcSGipWHeKsvCNPNRT6WPwZRYlsKt8_TCulFxzeRzffqWcWxEKUajPuBbc7N7/exec";
 let allKas = [], daftarNama = [];
 
 function login(){
@@ -466,7 +466,10 @@ function tambahKas(){
         jumlah = document.getElementById('jumlah').value,
         keterangan = 'Uang Kas';
   if(!nama || !bulan || !tahun || !jumlah){
-    alert("Lengkapi semua data!"); btn.disabled = false; btn.innerText = 'Tambah Data'; return;
+    alert("Lengkapi semua data!"); 
+    btn.disabled = false; 
+    btn.innerText = 'Tambah Data'; 
+    return;
   }
 
   const sudahAda = allKas.some(d => {
@@ -478,22 +481,37 @@ function tambahKas(){
 
   if(sudahAda){
     alert("❗ Data untuk bulan dan tahun tersebut sudah ada!");
-    btn.disabled = false; btn.innerText = 'Tambah Data'; return;
+    btn.disabled = false; 
+    btn.innerText = 'Tambah Data'; 
+    return;
   }
 
-  fetch(`${URL}?action=addKas&password=admin123`,{
+  fetch(`${URL}?action=addKas`,{
     method:'POST',
     body: new URLSearchParams({nama,bulan,tahun,jumlah,keterangan})
-  }).then(r=>r.json()).then(res=>{
-    if(res.status==='success'){ 
+  })
+  .then(r => r.json())
+  .then(res => {
+    
+    if(res && res.status === 'success'){ 
       alert("Data ditambahkan!"); 
       document.getElementById('bulanSelect').value='';
       document.getElementById('tahunSelect').value='';
       document.getElementById('jumlah').value='';
       namaSelect.setChoiceByValue('');
       loadKas(); 
-    } else alert("Gagal tambah data");
-  }).finally(()=>{ btn.disabled = false; btn.innerText = 'Tambah Data'; });
+    } else {
+      alert("Gagal tambah data: " + (res?.status || 'Tidak diketahui'));
+    }
+  })
+  .catch(error => {
+    console.error("Fetch error:", error);
+    alert("Gagal koneksi server.");
+  })
+  .finally(()=>{
+    btn.disabled = false;
+    btn.innerText = 'Tambah Data';
+  });
 }
 
 function openEdit(kode,nama,bulan,jumlah,keterangan,tahun){
@@ -559,7 +577,7 @@ function updateKas(){
         jumlah=document.getElementById('editJumlah').value,
         keterangan=document.getElementById('editKeterangan').value;
   if(!nama||!bulan||!tahun||!jumlah){ alert("Lengkapi data!"); btn.disabled = false; btn.innerText = 'Simpan Perubahan'; return; }
-  fetch(`${URL}?action=editKas&password=admin123`,{
+  fetch(`${URL}?action=editKas`,{
     method:'POST',
     body:new URLSearchParams({kode,nama,bulan,tahun,jumlah,keterangan})
   }).then(r=>r.json()).then(res=>{
@@ -584,7 +602,7 @@ function clearEditForm(){
 
 function hapusKas(kode){
   if(confirm("Hapus pembayaran ini?"))
-  fetch(`${URL}?action=deleteKas&password=admin123&kode=${kode}`,{method:'POST'})
+  fetch(`${URL}?action=deleteKas&kode=${kode}`,{method:'POST'})
   .then(r=>r.json()).then(res=>{
     if(res.status==='deleted'){ alert("Berhasil hapus"); loadKas(); }
     else alert("Gagal hapus");
@@ -626,7 +644,7 @@ function tambahNama(){
   const nama = document.getElementById('namaBaru').value.trim();
   if(!nama){ alert("Nama tidak boleh kosong!"); btn.disabled = false; btn.innerText = 'Tambah Nama'; return; }
   if(daftarNama.includes(nama)){ alert("Nama sudah ada!"); btn.disabled = false; btn.innerText = 'Tambah Nama'; return; }
-  fetch(`${URL}?action=addSiswa&password=admin123`,{
+  fetch(`${URL}?action=addSiswa`,{
     method:'POST',
     body: new URLSearchParams({nama})
   }).then(r=>r.json()).then(res=>{
