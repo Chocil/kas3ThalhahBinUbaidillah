@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekap Kas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f3f4f6;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #2563eb;
+      margin-bottom: 20px;
+    }
+    .filters {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    select, input {
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      outline: none;
+      width: 100%;
+    }
+
+    /* Custom dropdown */
+    .dropdown-container {
+      position: relative;
+    }
+    .dropdown-list {
+      position: absolute;
+      width: 100%;
+      max-height: 150px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      z-index: 10;
+      display: none;
+    }
+    .dropdown-list div {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .dropdown-list div:hover {
+      background: #e0f2fe;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    table {
+      border-collapse: collapse;
+      min-width: 700px;
+      width: 100%;
+    }
+    th, td {
+      padding: 10px 6px;
+      border: 1px solid #e5e7eb;
+      text-align: center;
+      background-color: white;
+      white-space: nowrap;
+    }
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    td {
+      font-size: 14px;
+    }
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      background-color: #f9fafb;
+      z-index: 1;
+      text-align: left;
+      font-weight: 600;
+    }
+    .sudah {
+      color: #16a34a;
+      font-size: 18px;
+    }
+    .belum {
+      color: #dc2626;
+      font-size: 18px;
+    }
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      th, td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+      table { min-width: 600px; }
+      th:first-child, td:first-child {
+        font-size: 12px;
+      }
+    }
+
+    button {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+button:hover {
+  background-color: #ea580c;
+}
+
+  </style>
+</head>
+<body>
+
+<h2></h2>
+
+<div class="filters">
+  <select id="tahunSelect" onchange="renderTabel()">
+    <option value="">Pilih Tahun</option>
+  
+  </select>
+
+  <div class="dropdown-container">
+    <input type="text" id="namaInput" placeholder="Ketik atau pilih nama..." oninput="filterDropdown()" onfocus="showDropdown()" autocomplete="off">
+    <div id="dropdownList" class="dropdown-list"></div>
+  </div>
+  <button onclick="resetFilter()">🔄 Reset Filter</button>
+</div>
+
+<div class="table-container">
+  <div id="rekapTable">Memuat data...</div>
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbyJqgV9Qdiwc2YyQEjD9jrreqvbn0LRiD8rSSlMxkwoNZUD5tTa3gzFiOk3grDSzg/exec";
+const bulanList = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+let siswaList = [];
+let kasList = [];
+
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase().trim();
+}
+
+async function loadData() {
+  try {
+    const siswaRes = await fetch(`${URL}?action=getSiswa`);
+    const siswaRaw = await siswaRes.json();
+    siswaList = siswaRaw.map(s => String(s[0] || "").trim());
+
+    updateDropdownList();
+
+    const kasRes = await fetch(`${URL}?action=getKas`);
+    kasList = (await kasRes.json()).slice(1);
+
+    const tahunUnik = [...new Set(
+      kasList.map(row => String(row[6] || "").trim()).filter(t => t)
+    )].sort();
+
+    const tahunSelect = document.getElementById("tahunSelect");
+    tahunSelect.innerHTML = `<option value="">Pilih Tahun</option>`;
+    tahunUnik.forEach(t => {
+      tahunSelect.innerHTML += `<option value="${t}">${t}</option>`;
+    });
+
+    document.getElementById("rekapTable").innerHTML = "Silakan pilih tahun dan nama.";
+  } catch (e) {
+    document.getElementById("rekapTable").innerHTML = "❌ Gagal memuat data.";
+    console.error("Error:", e);
+  }
+}
+
+function resetFilter() {
+  document.getElementById("namaInput").value = "";
+  renderTabel();
+}
+
+function renderTabel() {
+  const tahun = document.getElementById("tahunSelect").value;
+  const filterNama = document.getElementById("namaInput").value.trim().toLowerCase();
+
+  if (!tahun) {
+    document.getElementById("rekapTable").innerHTML = "Silakan pilih tahun terlebih dahulu.";
+    return;
+  }
+
+  const rekap = {};
+  siswaList.forEach(nama => {
+    if (!filterNama || nama.toLowerCase().includes(filterNama)) {
+      rekap[nama] = {};
+      bulanList.forEach(bulan => {
+        rekap[nama][bulan] = "❌";
+      });
+    }
+  });
+
+  kasList.forEach(row => {
+    const nama = String(row[2] || "").trim();
+    const bulanFull = capitalize(row[3]);
+    const bulanIndex = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ].indexOf(bulanFull);
+    const tahunKas = String(row[6] || "").trim();
+
+    if (rekap[nama] && tahunKas === tahun && bulanIndex >= 0) {
+      const bulanSingkat = bulanList[bulanIndex];
+      rekap[nama][bulanSingkat] = "✔️";
+    }
+  });
+
+  let html = `<table><thead><tr><th>Nama</th>`;
+  bulanList.forEach(b => html += `<th>${b}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  for (let nama in rekap) {
+    html += `<tr><td>${nama}</td>`;
+    bulanList.forEach(bulan => {
+      const simbol = rekap[nama][bulan] || "❌";
+      const cls = simbol === "✔️" ? "sudah" : "belum";
+      html += `<td class="${cls}">${simbol}</td>`;
+    });
+    html += `</tr>`;
+  }
+
+  html += `</tbody></table>`;
+  document.getElementById("rekapTable").innerHTML = html;
+}
+
+// =======================
+// Custom Dropdown Events
+// =======================
+
+function updateDropdownList() {
+  const dropdown = document.getElementById("dropdownList");
+  dropdown.innerHTML = "";
+  siswaList.forEach(nama => {
+    const item = document.createElement("div");
+    item.textContent = nama;
+    item.onclick = () => {
+      document.getElementById("namaInput").value = nama;
+      hideDropdown();
+      renderTabel();
+    };
+    dropdown.appendChild(item);
+  });
+}
+
+function showDropdown() {
+  document.getElementById("dropdownList").style.display = "block";
+}
+
+function hideDropdown() {
+  setTimeout(() => {
+    document.getElementById("dropdownList").style.display = "none";
+  }, 200); // delay biar klik tidak tertutup duluan
+}
+
+function filterDropdown() {
+  const input = document.getElementById("namaInput").value.toLowerCase();
+  const dropdown = document.getElementById("dropdownList");
+  dropdown.innerHTML = "";
+  siswaList
+    .filter(nama => nama.toLowerCase().includes(input))
+    .forEach(nama => {
+      const item = document.createElement("div");
+      item.textContent = nama;
+      item.onclick = () => {
+        document.getElementById("namaInput").value = nama;
+        hideDropdown();
+        renderTabel();
+      };
+      dropdown.appendChild(item);
+    });
+  showDropdown();
+}
+
+document.addEventListener("click", function(e) {
+  if (!e.target.closest(".dropdown-container")) {
+    hideDropdown();
+  }
+});
+
+loadData();
+</script>
+
+</body>
+</html>
