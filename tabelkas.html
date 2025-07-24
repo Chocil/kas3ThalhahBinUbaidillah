@@ -235,15 +235,16 @@ function renderTabel() {
   bulanList.forEach(b => html += `<th>${b}</th>`);
   html += `</tr></thead><tbody>`;
 
-  for (let nama in rekap) {
-    html += `<tr><td>${nama}</td>`;
-    bulanList.forEach(bulan => {
-      const simbol = rekap[nama][bulan] || "❌";
-      const cls = simbol === "✔️" ? "sudah" : "belum";
-      html += `<td class="${cls}">${simbol}</td>`;
-    });
-    html += `</tr>`;
-  }
+  Object.keys(rekap).sort((a, b) => a.localeCompare(b)).forEach(nama => {
+  html += `<tr><td>${nama}</td>`;
+  bulanList.forEach(bulan => {
+    const simbol = rekap[nama][bulan] || "❌";
+    const cls = simbol === "✔️" ? "sudah" : "belum";
+    html += `<td class="${cls}">${simbol}</td>`;
+  });
+  html += `</tr>`;
+});
+
 
   html += `</tbody></table>`;
   document.getElementById("rekapTable").innerHTML = html;
