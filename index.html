@@ -121,14 +121,59 @@ button:hover {
 
 /* ====== KALENDER BOX ====== */
 /* ====== KOTAK KALENDER ====== */
+/* ====== KOTAK KALENDER ====== */
 .kalender-box {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 25px;
-  margin: 30px auto;
-  max-width: 450px;
-  padding: 20px;
+  grid-template-columns: repeat(4, 1fr); /* Default desktop: 4 kolom */
+  gap: 20px;
+  justify-content: center;
+  align-items: start;
 }
+
+/* Untuk tablet - 3 kolom */
+@media (max-width: 768px) {
+  .kalender-box {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Untuk layar sedang - 2 kolom */
+@media (max-width: 600px) {
+  .kalender-box {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Untuk layar kecil (HP) - juga 2 kolom */
+@media (max-width: 400px) {
+  .kalender-box {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .kalender-item {
+    padding: 10px;
+  }
+
+  .kalender-item h3 {
+    font-size: 18px;
+  }
+
+  .status {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .status-text {
+    font-size: 12px;
+  }
+
+  .kalender-item button {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
 
 /* ====== ITEM KALENDER ====== */
 .kalender-item {
@@ -345,7 +390,7 @@ button:hover {
     <option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option>
     <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
   </select>
-  <input type="number" id="jumlah" placeholder="Jumlah (contoh: 30000)">
+  <input type="number" id="jumlah" placeholder="Jumlah (contoh: 15000)">
   <button id="btnTambahKas" onclick="tambahKas()">Tambah Data</button>
 </div>
 
@@ -378,7 +423,7 @@ button:hover {
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbzOCzTJcSGipWHeKsvCNPNRT6WPwZRYlsKt8_TCulFxzeRzffqWcWxEKUajPuBbc7N7/exec";
+const URL = "https://script.google.com/macros/s/AKfycbyJqgV9Qdiwc2YyQEjD9jrreqvbn0LRiD8rSSlMxkwoNZUD5tTa3gzFiOk3grDSzg/exec";
 let allKas = [], daftarNama = [];
 
 function login(){
